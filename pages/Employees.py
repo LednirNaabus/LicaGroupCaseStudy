@@ -3,33 +3,26 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Load data
 @st.cache_data
 def load_data():
-    # Replace this with your actual data loading logic
     df = pd.read_csv("data/Employees_Sheet.csv")
     return df
 
 df = load_data()
 
-# Sidebar for employee selection
 st.sidebar.title("Employee Selection")
-selected_employee = st.sidebar.selectbox("Choose an employee", df['Name'].unique())
+selected_employee = st.sidebar.selectbox("Select employee", df['Name'].unique())
 
-# Filter data for selected employee
 employee_data = df[df['Name'] == selected_employee].iloc[0]
 
-# Main dashboard
-st.title(f"Performance Dashboard: {selected_employee}")
+st.title(f"Employee Performance Dashboard: {selected_employee}")
 
-# Basic Info
 st.subheader("Employee Information")
 col1, col2, col3 = st.columns(3)
 col1.metric("Employee ID", employee_data['Employee ID'])
 col2.metric("Department", employee_data['Department'])
 col3.metric("Performance Rating", employee_data['Performance Rating'])
 
-# Attendance
 st.subheader("Attendance")
 fig = go.Figure(go.Indicator(
     mode = "gauge+number",
@@ -44,7 +37,6 @@ fig = go.Figure(go.Indicator(
                  {'range': [80, 100], 'color': "green"}]}))
 st.plotly_chart(fig)
 
-# Training Hours
 st.subheader("Training and Development")
 avg_training_hours = df['Training Hours'].mean()
 fig = go.Figure(go.Bar(
@@ -56,14 +48,12 @@ fig = go.Figure(go.Bar(
 fig.update_layout(title_text="Training Hours Comparison")
 st.plotly_chart(fig)
 
-# Projects Completed
 st.subheader("Projects Completed")
 avg_projects = df['Projects Completed'].mean()
 col1, col2 = st.columns(2)
 col1.metric("Employee Projects", employee_data['Projects Completed'])
 col2.metric("Company Average", f"{avg_projects:.1f}")
 
-# Client Satisfaction and Sales Revenue
 st.subheader("Client Satisfaction and Sales Performance")
 fig = go.Figure()
 fig.add_trace(go.Indicator(
@@ -81,7 +71,6 @@ fig.add_trace(go.Indicator(
 fig.update_layout(grid = {'rows': 1, 'columns': 2, 'pattern': "independent"})
 st.plotly_chart(fig)
 
-# Performance Radar Chart
 st.subheader("Performance Overview")
 categories = ['Attendance', 'Training', 'Projects', 'Satisfaction', 'Sales']
 employee_values = [
@@ -115,7 +104,6 @@ fig.add_trace(go.Scatterpolar(
 fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 1])), showlegend=True)
 st.plotly_chart(fig)
 
-# Recommendations
 st.subheader("Recommendations")
 recommendations = []
 if employee_data['Attendance (%)'] < df['Attendance (%)'].mean():
@@ -133,4 +121,4 @@ if recommendations:
     for rec in recommendations:
         st.write(f"- {rec}")
 else:
-    st.write("Great job! Keep up the good work across all areas.")
+    st.write("The employee is doing well across all areas.")
